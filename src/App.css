@@ -20,3 +20,7 @@
 body .dropdown-menu {
   min-width: 19rem;
 }
+
+.pad-item-bottom {
+  padding-bottom: 15px;
+}

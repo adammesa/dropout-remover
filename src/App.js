@@ -3,6 +3,8 @@ import logo from './flask.svg';
 import './App.css';
 import InstructionsGuide from './components/instructions';
 import Uploader from './components/uploader';
+import SDFilter from './components/sdfilter';
+import FilterCutoff from './components/filtercutoff';
 
 class App extends React.Component {
   constructor(props) {
@@ -10,18 +12,31 @@ class App extends React.Component {
     this.state = {
       csvData: [],
       delRowNums: [],
-      removeBySD: true,
-      unitDifferenceCutoff: 1,
+      SDmode: true,
+      filterCutoff: 1.5,
       lookbehind: 3,
       lookahead: 3,
     }
 
     this.loadNewData = this.loadNewData.bind(this);
+    this.loadSDmode = this.loadSDmode.bind(this);
+    this.loadFilterCutoff = this.loadFilterCutoff.bind(this);
   }
 
+  // Callback for bringing up the selected file's csv data 
   loadNewData(newdata) {
-    console.log('loadNewData ran.')
     this.setState({ csvData: newdata });
+  }
+
+  // Callback for enabling/disabling standard deviation mode.
+  loadSDmode(isEnabled) {
+    this.setState({SDmode: isEnabled});
+  }
+
+  // Callback for getting the filter cutoff input
+  loadFilterCutoff(event) {
+    console.log(event.target.value);
+    this.setState({filterCutoff: event.target.value});
   }
 
   render() {
@@ -45,6 +60,9 @@ class App extends React.Component {
               </div>
               <p>Load .csv file:</p>
               <Uploader callback={this.loadNewData} />
+              <label className="label">Filter Settings</label>
+              <SDFilter callback={this.loadSDmode} />
+              <FilterCutoff callback={this.loadFilterCutoff} default={this.state.filterCutoff} />
             </div>
             <div className="column">
               {/* Right-hand Column - draw graphs here!*/}

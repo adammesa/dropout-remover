@@ -18,12 +18,12 @@ class CsvPreview extends React.Component {
     // Pass "csvData" to this component
     render() {
         // @TODO: add logic here to hide when file not chosen
-        if (this.props.csvData.length == 0 || !this.props.csvData) {
+        if (this.props.csvData.length === 0 || !this.props.csvData) {
             return (<div></div>)
         }
         return (
             <div>
-                <div style={{ textAlign: 'left' }} className={this.state.active ? "dropdown is-active" : "dropdown"}>
+                <div className={this.state.active ? "dropdown is-active is-pulled-right" : "dropdown is-pulled-right"}>
                     <div className="dropdown-trigger">
                         <button className="button is-small is-text" aria-haspopup="true" onClick={this.toggleClass}>
                             <span>Preview</span>
