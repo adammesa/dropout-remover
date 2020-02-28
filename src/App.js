@@ -3,7 +3,6 @@ import logo from './flask.svg';
 import './App.css';
 import InstructionsGuide from './components/instructions';
 import Uploader from './components/uploader';
-import CsvPreview from './components/csvpreview';
 
 class App extends React.Component {
   constructor(props) {
@@ -32,7 +31,7 @@ class App extends React.Component {
           <img src={logo} className="App-logo" alt="logo" />
           <p>Built by Krassioukov Lab</p>
         </header>
-        <div className="container">
+        <div className="container" style={{paddingLeft: '25px'}}>
           {/* Left-hand Column - draw input/settings here! */}
           <div className="columns">
             <div className="column is-two-fifths box">
@@ -49,7 +48,6 @@ class App extends React.Component {
             </div>
             <div className="column">
               {/* Right-hand Column - draw graphs here!*/}
-              <CsvPreview csvData={this.state.csvData} />
             </div>
           </div>
         </div>
