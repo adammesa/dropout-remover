@@ -18,7 +18,7 @@ class InstructionsGuide extends React.Component {
     render() {
         return (
             <div>
-                <div className={this.state.active ? "dropdown is-active" : "dropdown"}>
+                <div style={{textAlign: 'left'}} className={this.state.active ? "dropdown is-active" : "dropdown"}>
                     <div className="dropdown-trigger">
                         <button className="button is-text" aria-haspopup="true" onClick={this.toggleClass}>
                             <span>Instructions</span>
