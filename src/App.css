@@ -1,16 +1,10 @@
-.App-logo {
-  height: 5vh;
-  width: 5vh;
-  pointer-events: none;
-  color: #cccccc;
-}
-
 .App-header {
   min-height: 20vh;
   display: flex;
   flex-direction: row;
   justify-content: left;
   color: grey;
+  padding-left: 25px;
 }
 
 .App-header p {
@@ -18,9 +12,25 @@
 }
 
 body .dropdown-menu {
-  min-width: 19rem;
+  min-width: 22rem;
 }
 
 .pad-item-bottom {
   padding-bottom: 15px;
+}
+
+.dropout-controls {
+  border: white solid 3px;
+  border-radius: 5px;
+}
+
+.dropout-controls.isProcessing {
+  -webkit-animation: blink 5s infinite linear;
+  animation: blink 6s infinite linear;
+}
+
+@keyframes blink {
+  0%   { border-color: #a6c9ff; }
+  50%  { border-color: #3e8bff;}
+  100% { border-color: #a6c9ff; }
 }

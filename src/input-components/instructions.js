@@ -29,14 +29,26 @@ class InstructionsGuide extends React.Component {
                             <div className="dropdown-item">
                                 <p>
                                     <button className="delete" onClick={this.toggleClass} style={{ float: 'right' }}>Hide</button>
-                                    Upload a ".csv" file with any number of columns, and specify which column to analyze.
+                                    Upload a ".csv" file with any number of columns. Specify which column to analyze (and how many rows are headers).
                                     Data in that column that is an outlier relative to its immediate peers will be
                                     deleted (along with its entire row).
                                 </p>
                             </div>
                             <hr className="dropdown-divider" />
+                            <div className="dropdown-item"> 
+                                <b>Standard Deviation Mode </b><label className="tag">suggested</label>
+                                <p>Compares the current data point to the specified amount of values ahead/behind, if it is a deviation away, will "drop".</p>
+                            </div>
+                            <div className="dropdown-item"> 
+                                <b>Absolute Mode </b>
+                                <p>Compares the current data point to the average of the of values ahead/behind, if it is a static difference away, will "drop."</p>
+                            </div>
+                            <hr className="dropdown-divider" />
                             <div className="dropdown-item">
-                                <p>Audit the code on github</p>
+                                <p>The program also lets you choose if dropouts can be lower (negative) compared to the average
+                                    of the compared period, or higher, or both. This is useful if your sensor when reporting
+                                    erroneous values, does so in one consistent direction. 
+                                </p>
                             </div>
                         </div>
                     </div>

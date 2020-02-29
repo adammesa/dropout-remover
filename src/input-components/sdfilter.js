@@ -34,7 +34,7 @@ class SDFilter extends React.Component {
                                 checked={this.state.SDmode}
                                 onChange={this.beginCallback}
                             />
-                            S.D. <span className="tag">Suggested</span>
+                            Standard Deviation
                     </label>
                         <label className="radio">
                             <input
