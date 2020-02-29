@@ -108,7 +108,11 @@ class App extends React.Component {
                   <TableHeaders callback={this.loadIgnoredRows} default={this.state.ignoredRows} />
                 </div>
                 <div className="column">
-                  <AnalysisColumn callback={this.loadAnalysisColumn} default={this.state.analysisColumn} />
+                  <AnalysisColumn
+                    callback={this.loadAnalysisColumn}
+                    maxColumns={this.state.csvData.length === 0 ? '10' : this.state.csvData[0].length}
+                    default={this.state.analysisColumn}
+                  />
                 </div>
               </div>
               <label className="label">Filter Settings</label>
@@ -141,13 +145,13 @@ class App extends React.Component {
               >
                 {this.state.isProcessing ? 'Auto-processing' : 'Process'}
               </button>
-          </div>
-          <div className="column">
-            {/* Right-hand Column - draw graphs here!*/}
-            <Results {...this.state} />
+            </div>
+            <div className="column">
+              {/* Right-hand Column - draw graphs here!*/}
+              <Results {...this.state} />
+            </div>
           </div>
         </div>
-      </div>
       </div >
     );
   }

@@ -16,6 +16,7 @@ class AnalysisColumn extends React.Component {
                     type="number" 
                     onChange={this.props.callback} 
                     min="1"
+                    max={this.props.maxColumns}
                     step="1"
                     value={this.props.default}
                     placeholder="(Integers only)" />
