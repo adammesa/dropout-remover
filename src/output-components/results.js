@@ -45,21 +45,26 @@ class Results extends React.Component {
     }
 
     render() {
-        return (
-            <div style={{ height: '100%' }}>
-                <FileStats
-                    {...this.state}
-                    csvData={this.props.csvData}
-                    ignoredRows={this.props.ignoredRows}
-                />
-                <Visualizer
-                    {...this.state}
-                    csvData={this.props.csvData}
-                    ignoredRows={this.props.ignoredRows}
-                    analysisColumn={this.props.analysisColumn}
-                />
-            </div>
-        );
+        if (this.props.csvData.length > 0 && this.props.isProcessing) {
+            return (
+                <div style={{ height: '100%' }}>
+                    <FileStats
+                        {...this.state}
+                        csvData={this.props.csvData}
+                        ignoredRows={this.props.ignoredRows}
+                    />
+                    <Visualizer
+                        {...this.state}
+                        csvData={this.props.csvData}
+                        ignoredRows={this.props.ignoredRows}
+                        analysisColumn={this.props.analysisColumn}
+                    />
+                </div>
+            );
+        } else {
+            return (<div></div>);
+        }
+
     }
 }
 

@@ -6,7 +6,7 @@ class FileStats extends React.Component {
         let rowCount = this.props.csvData.length - this.props.ignoredRows;
 
         return (
-            <div className={rowCount > 0 ? '' : 'is-hidden'}>
+            <div>
                 <p>Stats: {this.props.delRowNums.length} of {rowCount} rows removed </p> 
             </div>
         );

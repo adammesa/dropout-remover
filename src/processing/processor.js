@@ -30,7 +30,8 @@ class Processor {
         delRowNums) {
         let columns = csvData[0].length;
         let graphData = [];
-        for (let col = 1; col <= columns; col++) {
+        let endPoint = 0;
+        for (let col = 0; col < columns; col++) {
             let dataPoints = [];
             let xPoint = 1;
             for (let row = ignoredRows; row < csvData.length; row++) {
@@ -38,10 +39,17 @@ class Processor {
                     // Skip this data point; create null so it shows up as break
                     dataPoints.push({x: xPoint, y: null});
                 } else {
-                    dataPoints.push({
-                        x: xPoint,
-                        y: csvData[row][col]
-                    });
+                    // Must first check that row val is a number, otherwise don't push
+                    if (!isNaN(parseInt(csvData[row][col]))) {
+                        dataPoints.push({
+                            x: xPoint,
+                            y: parseFloat(csvData[row][col])
+                        });
+                        if (xPoint > endPoint) {
+                            // Used in axis tick calculations
+                            endPoint = xPoint;
+                        }
+                    }
                 }
                 xPoint++;
             }
@@ -52,15 +60,26 @@ class Processor {
             };
             graphData.push(currentLine);
         }
-        console.log('Returning graphdata for ' + this.getColName(csvData, 1, ignoredRows));
+        let tenthPoint = Math.round(endPoint/10);
+        graphData.push([1, tenthPoint, 
+            tenthPoint*2, 
+            tenthPoint*3, 
+            tenthPoint*4, 
+            tenthPoint*5, 
+            tenthPoint*6, 
+            tenthPoint*7, 
+            tenthPoint*8,
+            tenthPoint*9,
+            endPoint
+        ]);
         return graphData;
     }
 
     // Combines the contents of the ignored rows to form a column title
     static getColName(csvData, column, ignoredRows) {
-        let title;
+        let title = '';
         for (let row = 0; row < ignoredRows; row++) {
-            title = title + ' ' + csvData[row][column];
+            title = title + csvData[row][column] + ' ';
         }
         return title;
     }
