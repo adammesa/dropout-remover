@@ -3,13 +3,18 @@ import React from 'react';
 class FileStats extends React.Component {
 
     render() {
-        let rowCount = this.props.csvData.length - this.props.ignoredRows;
+        if (this.props.isProcessing) {
+            let rowCount = this.props.csvData.length - this.props.ignoredRows;
 
-        return (
-            <div>
-                <p>Stats: {this.props.delRowNums.length} of {rowCount} rows removed </p> 
-            </div>
-        );
+            return (
+                <div className="card">
+                    <p>Stats: {this.props.delRowNums.length} of {rowCount} rows removed </p> 
+                </div>
+            );
+        } else {
+            return (<div></div>);
+        }
+
     }
 }
 

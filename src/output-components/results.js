@@ -1,7 +1,6 @@
 import React from 'react';
 import Processor from '../processing/processor';
 import Visualizer from './visualizer';
-import FileStats from './filestats';
 
 // Props expected:
 // - all state vars in app.js (csvData, SDmode, filterCutoff...)
@@ -9,6 +8,7 @@ import FileStats from './filestats';
 class Results extends React.Component {
     constructor(props) {
         super(props);
+        // @TODO: not necessary here, need to move upward to main app
         this.state = {
             delRowNums: [],
             valsDropped: 0,
@@ -48,11 +48,6 @@ class Results extends React.Component {
         if (this.props.csvData.length > 0 && this.props.isProcessing) {
             return (
                 <div style={{ height: '100%' }}>
-                    <FileStats
-                        {...this.state}
-                        csvData={this.props.csvData}
-                        ignoredRows={this.props.ignoredRows}
-                    />
                     <Visualizer
                         {...this.state}
                         csvData={this.props.csvData}

@@ -22,6 +22,8 @@ class Processor {
 
     // Prepares are Nivo-ready dataset from (original) csvData, delrows, and
     //    new cleanedCsvData, with ignoredRows becoming the title of each dataset
+    //    the last item of the array is the axis scale and needs to be separated prior
+    //    to the variable being passed to graphing software
     static toGraphData(
         csvData,
         cleanedCsvData,
@@ -31,6 +33,7 @@ class Processor {
         let columns = csvData[0].length;
         let graphData = [];
         let endPoint = 0;
+        let dropoutLineData = [];
         for (let col = 0; col < columns; col++) {
             let dataPoints = [];
             let xPoint = 1;
@@ -38,6 +41,7 @@ class Processor {
                 if (analysisColumn === col && delRowNums.includes(row)) {
                     // Skip this data point; create null so it shows up as break
                     dataPoints.push({x: xPoint, y: null});
+                    dropoutLineData.push({x: xPoint, y: csvData[row][col]});
                 } else {
                     // Must first check that row val is a number, otherwise don't push
                     if (!isNaN(parseInt(csvData[row][col]))) {
@@ -59,6 +63,12 @@ class Processor {
                 data: dataPoints
             };
             graphData.push(currentLine);
+        }
+        if (dropoutLineData.length > 0) {
+            graphData.push({
+                id: this.getColName(csvData, analysisColumn, ignoredRows) + ' dropped',
+                data: dropoutLineData
+            });
         }
         let tenthPoint = Math.round(endPoint/10);
         graphData.push([1, tenthPoint, 

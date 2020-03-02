@@ -1,5 +1,5 @@
 import React from 'react';
-import { ResponsiveLine } from '@nivo/line'
+import { ResponsiveLineCanvas } from '@nivo/line'
 import Processor from '../processing/processor';
 /**
  *  See Nivo docs for more information: https://nivo.rocks/line/
@@ -8,15 +8,6 @@ import Processor from '../processing/processor';
  * 
  **/
 class Visualizer extends React.Component {
-    // constructor(props) {
-    //     super(props);
-    //     // console.log('visualizer loaded');
-    // }
-
-    // componentDidUpdate() {
-    //     // console.log('visualizer updated');
-    // }
-
     render() {
         let graphData = Processor.toGraphData(
             this.props.csvData,
@@ -26,12 +17,15 @@ class Visualizer extends React.Component {
         let graphTickVals = graphData.pop();
         console.log(graphTickVals);
         return (
-            <div>
-                <div style={{ height: '700px', width: '700px', maxHeight: '100%', maxWidth: '100%' }}>
-                    <ResponsiveLine
+            <div style={{maxWidth: '700px', height: '630px', overflow: 'auto'}}>
+                <div style={{
+                    height: '600px',
+                    width: '1600px',
+                }}>
+                    <ResponsiveLineCanvas
                         data={graphData}
                         enableGridX={false}
-                        margin={{ left: 60, bottom: 50 }}
+                        margin={{ left: 60, bottom: 50, right: 50, top: 50 }}
                         axisLeft={{
                             orient: 'left',
                             legend: 'Value',
@@ -41,10 +35,18 @@ class Visualizer extends React.Component {
                         axisBottom={{
                             orient: 'bottom',
                             legend: 'Reading #',
-                            legendPosition: 'middle',
-                            legendOffset: 36,
-                            tickValues: {...graphTickVals}
+                            legendPosition: 'start',
+                            legendOffset: 40,
+                            tickValues: [ ...graphTickVals]
                         }}
+                        legends={[{
+                            anchor: 'bottom-left',
+                            direction: 'row',
+                            translateX: 100,
+                            translateY: 50,
+                            itemWidth: 180,
+                            itemHeight: 20
+                        }]}
                     />
                 </div>
             </div>

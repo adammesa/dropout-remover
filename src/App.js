@@ -9,6 +9,7 @@ import TableHeaders from './input-components/tableheaders';
 import AnalysisColumn from './input-components/analysiscolumn';
 import NegativeOnly from './input-components/negativeonly';
 import Results from './output-components/results';
+import FileStats from './output-components/filestats';
 
 class App extends React.Component {
   constructor(props) {
@@ -22,7 +23,8 @@ class App extends React.Component {
       lookDistance: 5,
       ignoredRows: 1,
       analysisColumn: 1,
-      isProcessing: false
+      isProcessing: false,
+      delRowNums: []
     }
 
     this.beginProcessingData = this.beginProcessingData.bind(this);
@@ -92,60 +94,67 @@ class App extends React.Component {
         <div className="container" style={{ paddingLeft: '25px' }}>
           {/* Left-hand Column - draw input/settings here! */}
           <div className="columns">
-            <div className={this.state.isProcessing ? 'column is-two-fifths box dropout-controls isProcessing' : 'column is-two-fifths box dropout-controls'}>
-              <div className="columns">
-                <div className="column">
-                  <h2 style={{ marginTop: '5px' }} className="title is-4">Dropout remover</h2>
+            <div className="column is-two-fifths">
+              <div style={{ overflow: 'auto' }}
+                className={this.state.isProcessing ? 'box dropout-controls isProcessing' : 'box dropout-controls'} >
+                <div className="columns">
+                  <div className="column">
+                    <h2 style={{ marginTop: '5px' }} className="title is-4">Dropout remover</h2>
+                  </div>
+                  <div className="column is-two-fifths" style={{ textAlign: 'right' }}>
+                    <InstructionsGuide />
+                  </div>
                 </div>
-                <div className="column is-two-fifths" style={{ textAlign: 'right' }}>
-                  <InstructionsGuide />
+                <p>Load .csv file:</p>
+                <Uploader callback={this.loadNewData} />
+                <div className="columns">
+                  <div className="column">
+                    <TableHeaders callback={this.loadIgnoredRows} default={this.state.ignoredRows} />
+                  </div>
+                  <div className="column">
+                    <AnalysisColumn
+                      callback={this.loadAnalysisColumn}
+                      maxColumns={this.state.csvData.length === 0 ? '10' : this.state.csvData[0].length}
+                      default={this.state.analysisColumn}
+                    />
+                  </div>
                 </div>
+                <label className="label">Filter Settings</label>
+                <SDFilter callback={this.loadSDmode} />
+                <div className="columns">
+                  <div className="column is-two-fifths">
+                    <FilterCutoff
+                      callback={this.loadFilterCutoff}
+                      default={this.state.filterCutoff}
+                      mode={this.state.SDmode}
+                    />
+                  </div>
+                  <div className="column">
+                    <LookDistance callback={this.loadLookDistance} default={this.state.lookDistance} />
+                  </div>
+                </div>
+                <div className="columns">
+                  <div className="column">
+                    <NegativeOnly
+                      callback={this.loadNegativeOnly}
+                      lowerDefault={this.state.filterLower}
+                      higherDefault={this.state.filterHigher}
+                    />
+                  </div>
+                </div>
+                <button
+                  className="button is-link is-light is-pulled-right"
+                  disabled={this.state.csvData.length === 0}
+                  onClick={this.beginProcessingData}
+                >
+                  {this.state.isProcessing ? 'Auto-processing' : 'Process'}
+                </button>
               </div>
-              <p>Load .csv file:</p>
-              <Uploader callback={this.loadNewData} />
-              <div className="columns">
-                <div className="column">
-                  <TableHeaders callback={this.loadIgnoredRows} default={this.state.ignoredRows} />
-                </div>
-                <div className="column">
-                  <AnalysisColumn
-                    callback={this.loadAnalysisColumn}
-                    maxColumns={this.state.csvData.length === 0 ? '10' : this.state.csvData[0].length}
-                    default={this.state.analysisColumn}
-                  />
-                </div>
-              </div>
-              <label className="label">Filter Settings</label>
-              <SDFilter callback={this.loadSDmode} />
-              <div className="columns">
-                <div className="column is-two-fifths">
-                  <FilterCutoff
-                    callback={this.loadFilterCutoff}
-                    default={this.state.filterCutoff}
-                    mode={this.state.SDmode}
-                  />
-                </div>
-                <div className="column">
-                  <LookDistance callback={this.loadLookDistance} default={this.state.lookDistance} />
-                </div>
-              </div>
-              <div className="columns">
-                <div className="column">
-                  <NegativeOnly
-                    callback={this.loadNegativeOnly}
-                    lowerDefault={this.state.filterLower}
-                    higherDefault={this.state.filterHigher}
-                  />
-                </div>
-              </div>
-              <button
-                className="button is-link is-light is-pulled-right"
-                disabled={this.state.csvData.length === 0}
-                onClick={this.beginProcessingData}
-              >
-                {this.state.isProcessing ? 'Auto-processing' : 'Process'}
-              </button>
+              <FileStats
+                {...this.state}
+              />
             </div>
+
             <div className="column">
               {/* Right-hand Column - draw graphs here!*/}
               <Results {...this.state} />
