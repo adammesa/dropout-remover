@@ -4,8 +4,8 @@ import Processor from '../processing/processor';
 /**
  *  See Nivo docs for more information: https://nivo.rocks/line/
  *  - will transform each column into a dataset/line
- * 
- * 
+ *  Props expected:
+ *  - graphWidth, csvData cleanedCsvData, ignoredRows, delRowNums
  **/
 class Visualizer extends React.Component {
     render() {
@@ -15,12 +15,11 @@ class Visualizer extends React.Component {
             this.props.ignoredRows,
             this.props.delRowNums);
         let graphTickVals = graphData.pop();
-        console.log(graphTickVals);
         return (
             <div style={{maxWidth: '700px', height: '630px', overflow: 'auto'}}>
                 <div style={{
                     height: '600px',
-                    width: '1600px',
+                    width: this.props.graphWidth,
                 }}>
                     <ResponsiveLineCanvas
                         data={graphData}

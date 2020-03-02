@@ -37,7 +37,6 @@ class Results extends React.Component {
                 delRowNums: result[0],
                 cleanedCsvData: result[1]
             });
-            console.log(result[2]);
         } else {
             // Process SD mode
         }
@@ -53,6 +52,7 @@ class Results extends React.Component {
                         csvData={this.props.csvData}
                         ignoredRows={this.props.ignoredRows}
                         analysisColumn={this.props.analysisColumn}
+                        graphWidth={this.props.graphWidth}
                     />
                 </div>
             );

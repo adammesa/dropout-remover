@@ -29,6 +29,10 @@ body .dropdown-menu {
   animation: blink 6s infinite linear;
 }
 
+.dropout-stats {
+  border-radius: 5px;
+}
+
 @keyframes blink {
   0%   { border-color: #a6c9ff; }
   50%  { border-color: #3e8bff;}

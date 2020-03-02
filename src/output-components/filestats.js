@@ -5,10 +5,32 @@ class FileStats extends React.Component {
     render() {
         if (this.props.isProcessing) {
             let rowCount = this.props.csvData.length - this.props.ignoredRows;
-
+            let droppedRowCount = this.props.delRowNums.length;
             return (
-                <div className="card">
-                    <p>Stats: {this.props.delRowNums.length} of {rowCount} rows removed </p> 
+                <div className="box dropout-stats has-background-link has-text-white">
+                    <div className="columns">
+                        <div className="column">
+                            <p className="is-size-4">
+                                {rowCount}
+                            </p>
+                            <p className="is-size-7">
+                                Total Rows
+                            </p>
+                        </div>
+                        <div className="column">
+                        <p className="is-size-4">
+                                {droppedRowCount}
+                            </p>
+                            <p className="is-size-7">
+                                Rows Dropped
+                            </p>
+                        </div>
+                        <div className="column">
+                            <button className="button is-light is-pulled-right">
+                                Download
+                            </button>
+                        </div>
+                    </div>
                 </div>
             );
         } else {

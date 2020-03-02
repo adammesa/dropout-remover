@@ -10,6 +10,7 @@ import AnalysisColumn from './input-components/analysiscolumn';
 import NegativeOnly from './input-components/negativeonly';
 import Results from './output-components/results';
 import FileStats from './output-components/filestats';
+import ZoomButtons from './output-components/zoombuttons';
 
 class App extends React.Component {
   constructor(props) {
@@ -24,10 +25,12 @@ class App extends React.Component {
       ignoredRows: 1,
       analysisColumn: 1,
       isProcessing: false,
-      delRowNums: []
+      delRowNums: [],
+      graphWidth: 700
     }
 
     this.beginProcessingData = this.beginProcessingData.bind(this);
+    this.changeGraphSize = this.changeGraphSize.bind(this);
     this.loadNegativeOnly = this.loadNegativeOnly.bind(this);
     this.loadNewData = this.loadNewData.bind(this);
     this.loadSDmode = this.loadSDmode.bind(this);
@@ -40,9 +43,19 @@ class App extends React.Component {
   // Trigger data processing
   beginProcessingData() {
     this.setState({ isProcessing: !this.state.isProcessing });
-    console.log("ran beginProcessingData");
     // Will cause re-build of Processor Component, now will turn back state to prevent
     //      the next update causing a rebuild
+  }
+
+  // Callback for resizing the visualizer chart (takes '+' or any other value will decrease width)
+  changeGraphSize(direction) {
+    let newWidth;
+    if(direction === '+') {
+      newWidth = this.state.graphWidth + 100;
+    } else {
+      newWidth = this.state.graphWidth - 100;
+    }
+    this.setState({graphWidth: newWidth});
   }
 
   // Callback for filtering lower/higher values only
@@ -89,14 +102,14 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header container">
-          <p>Built by Krassioukov Lab</p>
+          <p>Krassioukov Lab</p>
         </header>
         <div className="container" style={{ paddingLeft: '25px' }}>
           {/* Left-hand Column - draw input/settings here! */}
           <div className="columns">
             <div className="column is-two-fifths">
-              <div style={{ overflow: 'auto' }}
-                className={this.state.isProcessing ? 'box dropout-controls isProcessing' : 'box dropout-controls'} >
+              <div
+                className={this.state.isProcessing ? 'box dropout-controls isProcessing is-clearfix' : 'box dropout-controls is-clearfix'} >
                 <div className="columns">
                   <div className="column">
                     <h2 style={{ marginTop: '5px' }} className="title is-4">Dropout remover</h2>
@@ -149,6 +162,10 @@ class App extends React.Component {
                 >
                   {this.state.isProcessing ? 'Auto-processing' : 'Process'}
                 </button>
+                <ZoomButtons 
+                graphWidth={this.state.graphWidth} 
+                callback={this.changeGraphSize} 
+                isProcessing={this.state.isProcessing} />
               </div>
               <FileStats
                 {...this.state}
