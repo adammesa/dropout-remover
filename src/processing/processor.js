@@ -22,8 +22,8 @@ class Processor {
 
     // Prepares are Nivo-ready dataset from (original) csvData, delrows, and
     //    new cleanedCsvData, with ignoredRows becoming the title of each dataset
-    //    the last item of the array is the axis scale and needs to be separated prior
-    //    to the variable being passed to graphing software
+    //    Returns a map of:
+    //    { data: LineData, axisBottomTickValues: tickValues, colours: colour scheme }
     static toGraphData(
         csvData,
         cleanedCsvData,
@@ -32,61 +32,89 @@ class Processor {
         delRowNums) {
         let columns = csvData[0].length;
         let graphData = [];
+        let colorsList = [];
+        let defaultColorsList = ["#b3e2cd", "#fdcdac", "#f4cae4", "#fff2ae", "#f1e2cc"]
         let endPoint = 0;
         let dropoutLineData = [];
         for (let col = 0; col < columns; col++) {
             let dataPoints = [];
             let xPoint = 1;
             for (let row = ignoredRows; row < csvData.length; row++) {
-                if (analysisColumn === col && delRowNums.includes(row)) {
-                    // Skip this data point; create null so it shows up as break
-                    dataPoints.push({x: xPoint, y: null});
-                    dropoutLineData.push({x: xPoint, y: csvData[row][col]});
-                } else {
-                    // Must first check that row val is a number, otherwise don't push
-                    if (!isNaN(parseInt(csvData[row][col]))) {
-                        dataPoints.push({
-                            x: xPoint,
-                            y: parseFloat(csvData[row][col])
-                        });
-                        if (xPoint > endPoint) {
-                            // Used in axis tick calculations
-                            endPoint = xPoint;
-                        }
+                // Must first check that row val is a number, otherwise don't push
+                if (!isNaN(parseInt(csvData[row][col]))) {
+                    dataPoints.push({
+                        x: xPoint,
+                        y: parseFloat(csvData[row][col])
+                    });
+                    if (xPoint > endPoint) {
+                        // Used in axis tick calculations
+                        endPoint = xPoint;
                     }
                 }
                 xPoint++;
             }
-
-            let currentLine = {
-                id: this.getColName(csvData, col, ignoredRows),
-                data: dataPoints
-            };
+            let currentLine;
+            if (analysisColumn === col) {
+                /// Sets a light blue colour so the pruned dataset can be darker and stand out
+                currentLine = {
+                    id: this._getColName(csvData, col, ignoredRows),
+                    data: dataPoints
+                }
+                colorsList.push("hsl(204, 100%, 80%");
+            } else {
+                currentLine = {
+                    id: this._getColName(csvData, col, ignoredRows),
+                    data: dataPoints
+                };
+                // use a pastel colour
+                colorsList.push(defaultColorsList[col % defaultColorsList.length]);
+            }
             graphData.push(currentLine);
         }
-        if (dropoutLineData.length > 0) {
+        if (cleanedCsvData.length > 0) {
+            let dataPoints = Processor.getDataPoints(ignoredRows, cleanedCsvData, delRowNums, analysisColumn);
+
             graphData.push({
-                id: this.getColName(csvData, analysisColumn, ignoredRows) + ' dropped',
-                data: dropoutLineData
+                id: this._getColName(cleanedCsvData, analysisColumn, ignoredRows) + ' dropped',
+                data: dataPoints
             });
+            colorsList.push("hsl(204, 100%, 50%)");
         }
-        let tenthPoint = Math.round(endPoint/10);
-        graphData.push([1, tenthPoint, 
-            tenthPoint*2, 
-            tenthPoint*3, 
-            tenthPoint*4, 
-            tenthPoint*5, 
-            tenthPoint*6, 
-            tenthPoint*7, 
-            tenthPoint*8,
-            tenthPoint*9,
+        let tenthPoint = Math.round(endPoint / 10);
+        let tickVals = [1, tenthPoint,
+            tenthPoint * 2,
+            tenthPoint * 3,
+            tenthPoint * 4,
+            tenthPoint * 5,
+            tenthPoint * 6,
+            tenthPoint * 7,
+            tenthPoint * 8,
+            tenthPoint * 9,
             endPoint
-        ]);
-        return graphData;
+        ];
+
+        return { data: graphData, axisBottomTickValues: tickVals, colors: colorsList };
+    }
+
+    static getDataPoints(ignoredRows, cleanedCsvData, delRowNums, analysisColumn) {
+        let dataPoints;
+        let xPoint = 1;
+        for (let row = ignoredRows; row < cleanedCsvData.length; row++) {
+            if (delRowNums.includes(row)) {
+                dataPoints.push({ x: xPoint, y: null });
+            }
+            else {
+                if (!isNaN(parseInt(cleanedCsvData[row][analysisColumn]))) {
+                    dataPoints.push({ x: xPoint, y: cleanedCsvData[row][analysisColumn] });
+                }
+            }
+            xPoint++;
+        }
+        return dataPoints;
     }
 
     // Combines the contents of the ignored rows to form a column title
-    static getColName(csvData, column, ignoredRows) {
+    static _getColName(csvData, column, ignoredRows) {
         let title = '';
         for (let row = 0; row < ignoredRows; row++) {
             title = title + csvData[row][column] + ' ';

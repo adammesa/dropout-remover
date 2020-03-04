@@ -2,16 +2,28 @@ import React from 'react';
 
 class FileStats extends React.Component {
 
+
     render() {
+        let cleanRowCount = 0;
+        this.props.csvData.forEach(row => {
+            let containsVal = false;
+            row.forEach(colVal => {
+                if(!containsVal && !isNaN(parseInt(colVal))) {
+                    containsVal = true;
+                }
+            });
+            if(containsVal) {
+                cleanRowCount++;
+            }
+        });
         if (this.props.isProcessing) {
-            let rowCount = this.props.csvData.length - this.props.ignoredRows;
             let droppedRowCount = this.props.delRowNums.length;
             return (
                 <div className="box dropout-stats has-background-link has-text-white">
                     <div className="columns">
                         <div className="column">
                             <p className="is-size-4">
-                                {rowCount}
+                                {cleanRowCount}
                             </p>
                             <p className="is-size-7">
                                 Total Rows
@@ -27,7 +39,7 @@ class FileStats extends React.Component {
                         </div>
                         <div className="column">
                             <button className="button is-light is-pulled-right">
-                                Download
+                                Download 
                             </button>
                         </div>
                     </div>

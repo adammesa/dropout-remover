@@ -17,6 +17,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       csvData: [],
+      cleanedCsvData: [],
       SDmode: true,
       filterCutoff: 1.5,
       filterLower: true,
@@ -29,7 +30,7 @@ class App extends React.Component {
       graphWidth: 700
     }
 
-    this.beginProcessingData = this.beginProcessingData.bind(this);
+    this.toggleProcessingData = this.toggleProcessingData.bind(this);
     this.changeGraphSize = this.changeGraphSize.bind(this);
     this.loadNegativeOnly = this.loadNegativeOnly.bind(this);
     this.loadNewData = this.loadNewData.bind(this);
@@ -41,19 +42,25 @@ class App extends React.Component {
   }
 
   // Trigger data processing
-  beginProcessingData() {
+  toggleProcessingData() {
     this.setState({ isProcessing: !this.state.isProcessing });
     // Will cause re-build of Processor Component, now will turn back state to prevent
     //      the next update causing a rebuild
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.isProcessing) {
+      //@TODO: process data here
+    }
   }
 
   // Callback for resizing the visualizer chart (takes '+' or any other value will decrease width)
   changeGraphSize(direction) {
     let newWidth;
     if(direction === '+') {
-      newWidth = this.state.graphWidth + 100;
+      newWidth = this.state.graphWidth + 200;
     } else {
-      newWidth = this.state.graphWidth - 100;
+      newWidth = this.state.graphWidth - 200;
     }
     this.setState({graphWidth: newWidth});
   }
@@ -158,7 +165,7 @@ class App extends React.Component {
                 <button
                   className="button is-link is-light is-pulled-right"
                   disabled={this.state.csvData.length === 0}
-                  onClick={this.beginProcessingData}
+                  onClick={this.toggleProcessingData}
                 >
                   {this.state.isProcessing ? 'Auto-processing' : 'Process'}
                 </button>

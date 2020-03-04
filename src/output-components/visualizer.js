@@ -14,7 +14,6 @@ class Visualizer extends React.Component {
             this.props.cleanedCsvData,
             this.props.ignoredRows,
             this.props.delRowNums);
-        let graphTickVals = graphData.pop();
         return (
             <div style={{maxWidth: '700px', height: '630px', overflow: 'auto'}}>
                 <div style={{
@@ -22,7 +21,7 @@ class Visualizer extends React.Component {
                     width: this.props.graphWidth,
                 }}>
                     <ResponsiveLineCanvas
-                        data={graphData}
+                        data={graphData.data}
                         enableGridX={false}
                         margin={{ left: 60, bottom: 50, right: 50, top: 50 }}
                         axisLeft={{
@@ -31,12 +30,13 @@ class Visualizer extends React.Component {
                             legendPosition: 'middle',
                             legendOffset: -40
                         }}
+                        colors={[...graphData.colors]}
                         axisBottom={{
                             orient: 'bottom',
                             legend: 'Reading #',
                             legendPosition: 'start',
                             legendOffset: 40,
-                            tickValues: [ ...graphTickVals]
+                            tickValues: [ ...graphData.axisBottomTickValues]
                         }}
                         legends={[{
                             anchor: 'bottom-left',
