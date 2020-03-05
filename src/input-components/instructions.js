@@ -37,17 +37,21 @@ class InstructionsGuide extends React.Component {
                             <hr className="dropdown-divider" />
                             <div className="dropdown-item"> 
                                 <b>Standard Deviation Mode </b><label className="tag">suggested</label>
-                                <p>Compares the current data point to the specified amount of values ahead/behind, if it is a deviation away, will "drop".</p>
+                                <p>Compares the current data point to the specified amount of values ahead/behind (exclusive of this current point). If it is a 
+                                   more than the specified cutoff value from the unbiased standard deviation, will "drop".</p>
                             </div>
                             <div className="dropdown-item"> 
                                 <b>Absolute Mode </b>
-                                <p>Compares the current data point to the average of the of values ahead/behind, if it is a static difference away, will "drop."</p>
+                                <p>Compares the current data point to the mean of the of values ahead/behind, if it is a static difference away, will "drop."</p>
                             </div>
                             <hr className="dropdown-divider" />
                             <div className="dropdown-item">
                                 <p>The program also lets you choose if dropouts can be lower (negative) compared to the average
                                     of the compared period, or higher, or both. This is useful if your sensor when reporting
                                     erroneous values, does so in one consistent direction. 
+                                </p>
+                                <p>
+
                                 </p>
                             </div>
                         </div>

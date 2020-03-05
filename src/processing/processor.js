@@ -1,3 +1,4 @@
+import { std } from 'mathjs'
 /**
  *  Data Processor Code
  *  - Created by Adam Mesa (Krassioukov Lab, Faculty of Medicine, 
@@ -7,17 +8,35 @@
  *      new array which has said numbers dropped.
  **/
 class Processor {
-    // returns an array of (1) list of row #s pruned, (2) new csv Data after pruning
-    static processAbsolute(csvData, filterCutoff, filterLower,
-        filterHigher, lookDistance, ignoredRows, analysisColumn) {
-        let delRowNums = [];
-        let currRow = ignoredRows + 1;
-        let cleanedCsvData = [];
+    // Cleans the given csvData according to the passed variables and returns a map of: 
+    // (1) cleanedCsvData, (2) array of dropped rows
+    static cleanData(
+        csvData,
+        SDmode,
+        filterCutoff,
+        filterLower,
+        filterHigher,
+        lookDistance,
+        ignoredRows,
+        analysisColumn) {
+        let cleanData = [];
+        let removedRows = [];
+        // Push header columns onto CSV
+        for (let row = 0; row < ignoredRows; row++) { cleanData.push(csvData[row]); }
+        // Begin filtering the data
+        for (let row = ignoredRows; row < csvData.length; row++) {
 
-        return [
-            delRowNums,
-            cleanedCsvData
-        ];
+        }
+        return { cleanedCsvData: cleanData, delRowNums: removedRows };
+    }
+
+    // Checks if a value is an outlier compared to the neighbouring values 
+    // returns true if the value is an outlier, otherwise false
+    static _isOutlier(row, csvData, SDmode, filterCutoff, filterLower, filterHigher, lookDistance, ignoredRows, analysisColumn) {
+        // Current row is at front of file, not enough data points "behind" value to test with; save those tests to look "forward" 
+        if (row < (ignoredRows + lookDistance)) {
+
+        }
     }
 
     // Prepares are Nivo-ready dataset from (original) csvData, delrows, and
@@ -111,6 +130,28 @@ class Processor {
             xPoint++;
         }
         return dataPoints;
+    }
+
+    // Returns an csv matrix with all empty trailing rows removed
+    static removeTrailingEmpties(csvData) {
+        let originalLength = csvData.length
+        let encounteredLastVal = false;
+        for(let row = 0; row < originalLength; row++) {
+            if(!encounteredLastVal) {
+                let rowVals = csvData.pop();
+                rowVals.forEach(val => {
+                    if(!isNaN(parseInt(val))) {
+                        encounteredLastVal = true;
+                    }
+                });
+                if(encounteredLastVal) {
+                    console.log("Uploaded CSV truncated empty values up to row " + (originalLength - row) + ", dropped " + row + " empty values");
+                    csvData.push(rowVals);
+                    row = row + csvData.length; // shortcut to end pointless looping
+                }
+            }
+        }
+        return csvData;
     }
 
     // Combines the contents of the ignored rows to form a column title

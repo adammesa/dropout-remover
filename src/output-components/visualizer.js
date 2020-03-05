@@ -14,8 +14,9 @@ class Visualizer extends React.Component {
             this.props.cleanedCsvData,
             this.props.ignoredRows,
             this.props.delRowNums);
+        console.log(graphData.colors);
         return (
-            <div style={{maxWidth: '700px', height: '630px', overflow: 'auto'}}>
+            <div style={{ maxWidth: '700px', height: '630px', overflow: 'auto' }}>
                 <div style={{
                     height: '600px',
                     width: this.props.graphWidth,
@@ -36,7 +37,7 @@ class Visualizer extends React.Component {
                             legend: 'Reading #',
                             legendPosition: 'start',
                             legendOffset: 40,
-                            tickValues: [ ...graphData.axisBottomTickValues]
+                            tickValues: [...graphData.axisBottomTickValues]
                         }}
                         legends={[{
                             anchor: 'bottom-left',

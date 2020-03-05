@@ -1,6 +1,7 @@
 import React from 'react';
 import CSVReader from 'react-csv-reader';
 import CsvPreview from './csvpreview';
+import Processor from '../processing/processor';
 
 class Uploader extends React.Component {
     constructor(props) {
@@ -12,8 +13,10 @@ class Uploader extends React.Component {
     }
 
     beginCallback(newdata) {
-        this.setState({ innerCSVData: newdata });
-        this.props.callback(newdata);
+        /// Removes trailing rows from the uploaded file as well (CSVs commonly have hundreds of empty rows)
+        let newCsvData = Processor.removeTrailingEmpties(newdata);
+        this.setState({ innerCSVData: newCsvData });
+        this.props.callback(newCsvData);
     }
 
     render() {

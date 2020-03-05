@@ -1,21 +1,7 @@
 import React from 'react';
 
 class FileStats extends React.Component {
-
-
     render() {
-        let cleanRowCount = 0;
-        this.props.csvData.forEach(row => {
-            let containsVal = false;
-            row.forEach(colVal => {
-                if(!containsVal && !isNaN(parseInt(colVal))) {
-                    containsVal = true;
-                }
-            });
-            if(containsVal) {
-                cleanRowCount++;
-            }
-        });
         if (this.props.isProcessing) {
             let droppedRowCount = this.props.delRowNums.length;
             return (
@@ -23,7 +9,7 @@ class FileStats extends React.Component {
                     <div className="columns">
                         <div className="column">
                             <p className="is-size-4">
-                                {cleanRowCount}
+                                {this.props.csvData.length}
                             </p>
                             <p className="is-size-7">
                                 Total Rows

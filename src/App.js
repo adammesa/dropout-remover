@@ -11,6 +11,7 @@ import NegativeOnly from './input-components/negativeonly';
 import Results from './output-components/results';
 import FileStats from './output-components/filestats';
 import ZoomButtons from './output-components/zoombuttons';
+import Processor from './processing/processor.js';
 
 class App extends React.Component {
   constructor(props) {
@@ -44,25 +45,40 @@ class App extends React.Component {
   // Trigger data processing
   toggleProcessingData() {
     this.setState({ isProcessing: !this.state.isProcessing });
-    // Will cause re-build of Processor Component, now will turn back state to prevent
-    //      the next update causing a rebuild
   }
 
+  // Calls the analysis function if any of the filter settings have been changed
+  // - without checking, the analysis function would in-turn update cleanedCsvData 
+  //   and delRowNums, causing an infinite loop. 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.isProcessing) {
-      //@TODO: process data here
+    if (this.state.isProcessing) {
+      if (prevState.csvData !== this.state.csvData
+        || prevState.isProcessing !== this.state.isProcessing
+        || prevState.SDmode !== this.state.SDmode
+        || prevState.lookDistance !== this.state.lookDistance
+        || prevState.analysisColumn !== this.state.analysisColumn
+        || prevState.filterCutoff !== this.state.filterCutoff
+        || prevState.filterLower !== this.state.filterLower
+        || prevState.filterHigher !== this.state.filterHigher) {
+        let results = Processor.cleanData(this.state.csvData, this.state.SDmode, this.state.filterCutoff,
+          this.state.filterLower, this.state.filterHigher, this.state.lookDistance, this.state.ignoredRows,
+          this.state.analysisColumn);
+          // @TODO: un-comment this
+          // this.setState({cleanedCsvData: results.cleanedCsvData, delRowNums: results.delRowNums});
+      } else {
+      }
     }
   }
 
   // Callback for resizing the visualizer chart (takes '+' or any other value will decrease width)
   changeGraphSize(direction) {
     let newWidth;
-    if(direction === '+') {
+    if (direction === '+') {
       newWidth = this.state.graphWidth + 200;
     } else {
       newWidth = this.state.graphWidth - 200;
     }
-    this.setState({graphWidth: newWidth});
+    this.setState({ graphWidth: newWidth });
   }
 
   // Callback for filtering lower/higher values only
@@ -169,10 +185,10 @@ class App extends React.Component {
                 >
                   {this.state.isProcessing ? 'Auto-processing' : 'Process'}
                 </button>
-                <ZoomButtons 
-                graphWidth={this.state.graphWidth} 
-                callback={this.changeGraphSize} 
-                isProcessing={this.state.isProcessing} />
+                <ZoomButtons
+                  graphWidth={this.state.graphWidth}
+                  callback={this.changeGraphSize}
+                  isProcessing={this.state.isProcessing} />
               </div>
               <FileStats
                 {...this.state}
