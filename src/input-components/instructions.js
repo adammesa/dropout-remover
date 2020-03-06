@@ -29,20 +29,20 @@ class InstructionsGuide extends React.Component {
                             <div className="dropdown-item">
                                 <p>
                                     <button className="delete" onClick={this.toggleClass} style={{ float: 'right' }}>Hide</button>
-                                    Upload a ".csv" file with any number of columns. Specify which column to analyze (and how many rows are headers).
-                                    Data in that column that is an outlier relative to its immediate peers will be
-                                    deleted (along with its entire row).
+                                    Upload a ".csv" file with any number of columns. Specify which column to analyze.
+                                    Data in that column that is an outlier relative to its peers will be
+                                    deleted (along with all numbers in that row).
                                 </p>
                             </div>
                             <hr className="dropdown-divider" />
                             <div className="dropdown-item"> 
                                 <b>Standard Deviation Mode </b><label className="tag">suggested</label>
-                                <p>Compares the current data point to the specified amount of values ahead/behind (exclusive of this current point). If it is a 
-                                   more than the specified cutoff value from the unbiased standard deviation, will "drop".</p>
+                                <p>Compares the current data point to the specified amount of values ahead/behind (exclusive of this current point). If 
+                                    the point is more than the specified cutoff value different from the unbiased standard deviation, the row will be removed.</p>
                             </div>
                             <div className="dropdown-item"> 
                                 <b>Absolute Mode </b>
-                                <p>Compares the current data point to the mean of the of values ahead/behind, if it is a static difference away, will "drop."</p>
+                                <p>Compares the current data point to the mean of the of values ahead/behind, if it is a static difference away, will be deleted."</p>
                             </div>
                             <hr className="dropdown-divider" />
                             <div className="dropdown-item">
@@ -51,7 +51,10 @@ class InstructionsGuide extends React.Component {
                                     erroneous values, does so in one consistent direction. 
                                 </p>
                                 <p>
-
+                                    <b>First/Last values</b>: If the program is unable to "look" the specified amount of cells
+                                    behind or ahead of the current value, it will attempt to do so with the values that do exist
+                                    within the current look range. (It will not attempt to look further "ahead" if there are not
+                                    enough values "behind", however)
                                 </p>
                             </div>
                         </div>

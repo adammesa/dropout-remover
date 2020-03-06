@@ -13,8 +13,8 @@ class Visualizer extends React.Component {
             this.props.csvData,
             this.props.cleanedCsvData,
             this.props.ignoredRows,
+            this.props.analysisColumn,
             this.props.delRowNums);
-        console.log(graphData.colors);
         return (
             <div style={{ maxWidth: '700px', height: '630px', overflow: 'auto' }}>
                 <div style={{
@@ -44,7 +44,7 @@ class Visualizer extends React.Component {
                             direction: 'row',
                             translateX: 100,
                             translateY: 50,
-                            itemWidth: 180,
+                            itemWidth: (80 * this.props.ignoredRows),
                             itemHeight: 20
                         }]}
                     />

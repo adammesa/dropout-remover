@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import { mean } from 'mathjs';
 import InstructionsGuide from './input-components/instructions';
 import Uploader from './input-components/uploader';
 import SDFilter from './input-components/sdfilter';
@@ -12,6 +13,7 @@ import Results from './output-components/results';
 import FileStats from './output-components/filestats';
 import ZoomButtons from './output-components/zoombuttons';
 import Processor from './processing/processor.js';
+import ErrorMsg from './input-components/errormsg';
 
 class App extends React.Component {
   constructor(props) {
@@ -25,10 +27,11 @@ class App extends React.Component {
       filterHigher: false,
       lookDistance: 5,
       ignoredRows: 1,
-      analysisColumn: 1,
+      analysisColumn: 0,
       isProcessing: false,
       delRowNums: [],
-      graphWidth: 700
+      graphWidth: 700,
+      errorMsg: '',
     }
 
     this.toggleProcessingData = this.toggleProcessingData.bind(this);
@@ -47,7 +50,8 @@ class App extends React.Component {
     this.setState({ isProcessing: !this.state.isProcessing });
   }
 
-  // Calls the analysis function if any of the filter settings have been changed
+  // Calls the analysis function if any of the filter settings have been changed,
+  // or, if processing is disabled, checks to make sure that valid #'s are supplied
   // - without checking, the analysis function would in-turn update cleanedCsvData 
   //   and delRowNums, causing an infinite loop. 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -57,16 +61,35 @@ class App extends React.Component {
         || prevState.SDmode !== this.state.SDmode
         || prevState.lookDistance !== this.state.lookDistance
         || prevState.analysisColumn !== this.state.analysisColumn
+        || prevState.ignoredRows !== this.state.ignoredRows
         || prevState.filterCutoff !== this.state.filterCutoff
         || prevState.filterLower !== this.state.filterLower
         || prevState.filterHigher !== this.state.filterHigher) {
         let results = Processor.cleanData(this.state.csvData, this.state.SDmode, this.state.filterCutoff,
-          this.state.filterLower, this.state.filterHigher, this.state.lookDistance, this.state.ignoredRows,
+          this.state.filterLower, this.state.filterHigher, parseInt(this.state.lookDistance), this.state.ignoredRows,
           this.state.analysisColumn);
-          // @TODO: un-comment this
-          // this.setState({cleanedCsvData: results.cleanedCsvData, delRowNums: results.delRowNums});
+        this.setState({ cleanedCsvData: results.cleanedCsvData, delRowNums: results.delRowNums });
       } else {
       }
+    } else {
+      if(prevState.csvData !== this.state.csvData
+        || prevState.analysisColumn !== this.state.analysisColumn
+        || prevState.ignoredRows !== this.state.ignoredRows) {
+          if(this.state.csvData.length > 0
+            && this.state.ignoredRows !== ''
+            && this.state.analysisColumn !== -1) {
+            let colOfInterest = [];
+            for (let row = this.state.ignoredRows; row < this.state.csvData.length; row++) {
+              colOfInterest.push(this.state.csvData[row][this.state.analysisColumn]);
+            }
+            try {
+              mean(colOfInterest);
+              this.setState({errorMsg: ''});
+            } catch(e) {
+              this.setState({errorMsg: 'Only numbers can be analyzed'});
+            }
+          }
+        }
     }
   }
 
@@ -90,9 +113,9 @@ class App extends React.Component {
     }
   }
 
-  // Callback for updating the row to analyze
+  // Callback for updating analysis column
   loadAnalysisColumn(event) {
-    this.setState({ analysisColumn: event.target.value });
+    this.setState({ analysisColumn: (event.target.value - 1) });
   }
 
 
@@ -113,19 +136,19 @@ class App extends React.Component {
 
   // Callback for updating the filter cutoff input
   loadFilterCutoff(event) {
-    this.setState({ filterCutoff: event.target.value });
+    this.setState({ filterCutoff: parseFloat(event.target.value) });
   }
 
   // Callback for updating the look distance
   loadLookDistance(event) {
-    this.setState({ lookDistance: event.target.value });
+    this.setState({ lookDistance: parseInt(event.target.value) });
   }
 
   render() {
     return (
       <div className="App">
         <header className="App-header container">
-          <p>Krassioukov Lab</p>
+          <p>Made by Adam Mesa for Krassioukov Lab (Autonomic Research Unit, ICORD, UBC)</p>
         </header>
         <div className="container" style={{ paddingLeft: '25px' }}>
           {/* Left-hand Column - draw input/settings here! */}
@@ -150,7 +173,7 @@ class App extends React.Component {
                   <div className="column">
                     <AnalysisColumn
                       callback={this.loadAnalysisColumn}
-                      maxColumns={this.state.csvData.length === 0 ? '10' : this.state.csvData[0].length}
+                      maxColumns={this.state.csvData.length === 0 ? '1' : this.state.csvData[0].length}
                       default={this.state.analysisColumn}
                     />
                   </div>
@@ -178,9 +201,10 @@ class App extends React.Component {
                     />
                   </div>
                 </div>
+                <ErrorMsg errorMsg={this.state.errorMsg} />
                 <button
                   className="button is-link is-light is-pulled-right"
-                  disabled={this.state.csvData.length === 0}
+                  disabled={this.state.csvData.length === 0 || this.state.errorMsg !== ''}
                   onClick={this.toggleProcessingData}
                 >
                   {this.state.isProcessing ? 'Auto-processing' : 'Process'}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { CSVLink, CSVDownload } from 'react-csv';
 
 class FileStats extends React.Component {
     render() {
@@ -25,7 +26,7 @@ class FileStats extends React.Component {
                         </div>
                         <div className="column">
                             <button className="button is-light is-pulled-right">
-                                Download 
+                                <CSVLink data={this.props.cleanedCsvData}>Download</CSVLink>
                             </button>
                         </div>
                     </div>

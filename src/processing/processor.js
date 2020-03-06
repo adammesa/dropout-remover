@@ -1,4 +1,4 @@
-import { std } from 'mathjs'
+import { std, mean } from 'mathjs'
 /**
  *  Data Processor Code
  *  - Created by Adam Mesa (Krassioukov Lab, Faculty of Medicine, 
@@ -25,18 +25,77 @@ class Processor {
         for (let row = 0; row < ignoredRows; row++) { cleanData.push(csvData[row]); }
         // Begin filtering the data
         for (let row = ignoredRows; row < csvData.length; row++) {
-
+            if (this._isOutlier(row, csvData, SDmode, filterCutoff, filterLower,
+                filterHigher, lookDistance, ignoredRows, analysisColumn)) {
+                let emptyRow = [];
+                for (let col = 0; col < csvData[row].length; col++) {
+                    // Push empty values corresponding to amount of rows in original dataset
+                    if (isNaN(parseInt(csvData[row][col]))) {
+                        // looks like col contained text, don't delete
+                        emptyRow.push(csvData[row][col]);
+                    } else {
+                        emptyRow.push(null);
+                    }
+                }
+                cleanData.push(emptyRow);
+                removedRows.push(row);
+            } else {
+                cleanData.push(csvData[row]);
+            }
         }
         return { cleanedCsvData: cleanData, delRowNums: removedRows };
     }
 
-    // Checks if a value is an outlier compared to the neighbouring values 
-    // returns true if the value is an outlier, otherwise false
+    /*****
+     * Checks if a value is an outlier compared to the neighbouring values 
+     *
+     * returns true if the value is an outlier, otherwise false
+     * */
     static _isOutlier(row, csvData, SDmode, filterCutoff, filterLower, filterHigher, lookDistance, ignoredRows, analysisColumn) {
-        // Current row is at front of file, not enough data points "behind" value to test with; save those tests to look "forward" 
-        if (row < (ignoredRows + lookDistance)) {
-
+        let neighbouringVals = [];
+        let firstComparisonPoint = row - lookDistance;
+        let lastComparisonPoint = row + lookDistance;
+        let isOutlier = false;
+        let currentVal;
+        
+        if (firstComparisonPoint < ignoredRows) {
+            // Values "behind" of the current point aren't enough for lookDistance, so process current point as best possible
+            firstComparisonPoint = ignoredRows;
+        } else if (lastComparisonPoint > (csvData.length - 1)) {
+            // Values "ahead" of the current point aren't enough for lookDistance, so process current point as best possible
+            lastComparisonPoint = (csvData.length - 1); 
         }
+        for (let pos = firstComparisonPoint; pos < lastComparisonPoint; pos++) {
+            if(pos === row) { 
+                currentVal = csvData[pos][analysisColumn];
+            } else {
+                neighbouringVals.push(csvData[pos][analysisColumn]);
+            }
+        }
+        /**
+         * Dropout logic
+         */
+        let average = mean(neighbouringVals);
+        let currentDifference = currentVal - average;
+        // Is current value lower than its peers and are we filtering lower?
+        if (currentDifference < 0 && filterLower) {
+            if (SDmode) {
+                let stdeviation = std(neighbouringVals);
+                isOutlier = currentDifference < (-stdeviation * filterCutoff);
+            } else {
+                isOutlier = currentDifference < (-filterCutoff);
+            }
+        } else 
+        // Is current value higher than its peers and are we filtering higher?
+        if (currentDifference > 0 && filterHigher) {
+            if (SDmode) {
+                let stdeviation = std(neighbouringVals);
+                isOutlier = currentDifference > (stdeviation * filterCutoff);
+            } else {
+                isOutlier = currentDifference > (filterCutoff);
+            }
+        }
+        return isOutlier;
     }
 
     // Prepares are Nivo-ready dataset from (original) csvData, delrows, and
@@ -54,7 +113,6 @@ class Processor {
         let colorsList = [];
         let defaultColorsList = ["#b3e2cd", "#fdcdac", "#f4cae4", "#fff2ae", "#f1e2cc"]
         let endPoint = 0;
-        let dropoutLineData = [];
         for (let col = 0; col < columns; col++) {
             let dataPoints = [];
             let xPoint = 1;
@@ -91,7 +149,7 @@ class Processor {
             graphData.push(currentLine);
         }
         if (cleanedCsvData.length > 0) {
-            let dataPoints = Processor.getDataPoints(ignoredRows, cleanedCsvData, delRowNums, analysisColumn);
+            let dataPoints = Processor.getCleanedDataPoints(ignoredRows, cleanedCsvData, delRowNums, analysisColumn);
 
             graphData.push({
                 id: this._getColName(cleanedCsvData, analysisColumn, ignoredRows) + ' dropped',
@@ -115,8 +173,12 @@ class Processor {
         return { data: graphData, axisBottomTickValues: tickVals, colors: colorsList };
     }
 
-    static getDataPoints(ignoredRows, cleanedCsvData, delRowNums, analysisColumn) {
-        let dataPoints;
+    /***
+     *  Helper function to get plottable datapoints of the desired line from the
+     *  clean data set.
+     **/
+    static getCleanedDataPoints(ignoredRows, cleanedCsvData, delRowNums, analysisColumn) {
+        let dataPoints = [];
         let xPoint = 1;
         for (let row = ignoredRows; row < cleanedCsvData.length; row++) {
             if (delRowNums.includes(row)) {
@@ -136,16 +198,18 @@ class Processor {
     static removeTrailingEmpties(csvData) {
         let originalLength = csvData.length
         let encounteredLastVal = false;
-        for(let row = 0; row < originalLength; row++) {
-            if(!encounteredLastVal) {
+        // Declaring this func outside of for loop avoids 'no-loop-func' error
+        function isLastVal(val) {
+            if (!isNaN(parseInt(val))) {
+                encounteredLastVal = true;
+            }
+        }
+
+        for (let row = 0; row < originalLength; row++) {
+            if (!encounteredLastVal) {
                 let rowVals = csvData.pop();
-                rowVals.forEach(val => {
-                    if(!isNaN(parseInt(val))) {
-                        encounteredLastVal = true;
-                    }
-                });
-                if(encounteredLastVal) {
-                    console.log("Uploaded CSV truncated empty values up to row " + (originalLength - row) + ", dropped " + row + " empty values");
+                rowVals.forEach((val) => isLastVal(val));
+                if (encounteredLastVal) {
                     csvData.push(rowVals);
                     row = row + csvData.length; // shortcut to end pointless looping
                 }
@@ -153,6 +217,8 @@ class Processor {
         }
         return csvData;
     }
+
+
 
     // Combines the contents of the ignored rows to form a column title
     static _getColName(csvData, column, ignoredRows) {

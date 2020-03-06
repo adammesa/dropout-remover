@@ -18,7 +18,7 @@ class AnalysisColumn extends React.Component {
                     min="1"
                     max={this.props.maxColumns}
                     step="1"
-                    value={this.props.default}
+                    value={this.props.default + 1}
                     placeholder="(Integers only)" />
                 </div>
             </div>
