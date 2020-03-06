@@ -1,5 +1,5 @@
 import React from 'react';
-import { CSVLink, CSVDownload } from 'react-csv';
+import { CSVLink } from 'react-csv';
 
 class FileStats extends React.Component {
     render() {

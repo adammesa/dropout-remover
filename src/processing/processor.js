@@ -137,7 +137,7 @@ class Processor {
                     id: this._getColName(csvData, col, ignoredRows),
                     data: dataPoints
                 }
-                colorsList.push("hsl(204, 100%, 80%");
+                colorsList.push("hsl(204, 100%, 85%");
             } else {
                 currentLine = {
                     id: this._getColName(csvData, col, ignoredRows),
