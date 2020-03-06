@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/dropout-remover/static/css/main.88f54abe.chunk.css",
+    "main.js": "/dropout-remover/static/js/main.5cb4a8d8.chunk.js",
+    "main.js.map": "/dropout-remover/static/js/main.5cb4a8d8.chunk.js.map",
+    "runtime-main.js": "/dropout-remover/static/js/runtime-main.30823206.js",
+    "runtime-main.js.map": "/dropout-remover/static/js/runtime-main.30823206.js.map",
+    "static/js/2.f64f68d3.chunk.js": "/dropout-remover/static/js/2.f64f68d3.chunk.js",
+    "static/js/2.f64f68d3.chunk.js.map": "/dropout-remover/static/js/2.f64f68d3.chunk.js.map",
+    "index.html": "/dropout-remover/index.html",
+    "precache-manifest.e18437abbba73bfc3a2b213c81b4a3e7.js": "/dropout-remover/precache-manifest.e18437abbba73bfc3a2b213c81b4a3e7.js",
+    "service-worker.js": "/dropout-remover/service-worker.js",
+    "static/css/main.88f54abe.chunk.css.map": "/dropout-remover/static/css/main.88f54abe.chunk.css.map",
+    "static/js/2.f64f68d3.chunk.js.LICENSE.txt": "/dropout-remover/static/js/2.f64f68d3.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.30823206.js",
+    "static/js/2.f64f68d3.chunk.js",
+    "static/css/main.88f54abe.chunk.css",
+    "static/js/main.5cb4a8d8.chunk.js"
+  ]
+}
