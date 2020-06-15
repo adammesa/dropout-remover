@@ -14,6 +14,7 @@ import FileStats from './output-components/filestats';
 import ZoomButtons from './output-components/zoombuttons';
 import Processor from './processing/processor.js';
 import ErrorMsg from './input-components/errormsg';
+import About from './input-components/about';
 
 class App extends React.Component {
   constructor(props) {
@@ -147,13 +148,13 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header container">
-          <p>Made by Adam Mesa for Krassioukov Lab (Autonomic Research Unit, ICORD, UBC)</p>
+        <header className="App-header">
+          <p><About /></p>
         </header>
-        <div className="container" style={{ paddingLeft: '25px' }}>
+        <div className="app-body" style={{ paddingLeft: '25px' }}>
           {/* Left-hand Column - draw input/settings here! */}
           <div className="columns">
-            <div className="column is-two-fifths">
+            <div className="column is-two-fifths max-450-px">
               <div
                 className={this.state.isProcessing ? 'box dropout-controls isProcessing is-clearfix' : 'box dropout-controls is-clearfix'} >
                 <div className="columns">

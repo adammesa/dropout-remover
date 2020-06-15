@@ -7,12 +7,22 @@
   padding-left: 25px;
 }
 
+@media screen and (min-width: 769px) {
+  .max-450-px {
+    max-width: 450px !important;
+  }
+}
+
 .App-header p {
   margin-top: 12px;
 }
 
 body .dropdown-menu {
   min-width: 22rem;
+}
+
+.app-body > .columns {
+  min-height: 75vh;
 }
 
 .pad-item-bottom {
