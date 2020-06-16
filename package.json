@@ -2,7 +2,7 @@
   "name": "dropout-remover",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://adammesa.github.io/dropout-remover/",
+  "homepage": "https://adammesa.github.io/dropout-remover/",
   "dependencies": {
     "@mdi/js": "^4.9.95",
     "@mdi/react": "^1.3.0",

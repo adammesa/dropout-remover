@@ -9,6 +9,11 @@ Technologies used: React & JS (see below), Nivo ([@Nivo/line](https://nivo.rocks
 ---
 ## Versions
 
+**1.0.1 (June 15, 2020): Installable & UX Improvements**
+- Made dropout remover installable to desktop: no need to remember the URL
+- Adjusted workspace sizing so that wider screens have the full space utilized
+    - i.e. removed left/right padding, made settings container have a max width of 450px
+
 **1.0 (March 3, 2020): Initially functioning version**
 - dropouts and entire rows removed
 
