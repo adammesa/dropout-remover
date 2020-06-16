@@ -9,8 +9,12 @@ Technologies used: React & JS (see below), Nivo ([@Nivo/line](https://nivo.rocks
 ---
 ## Versions
 
-**1.0 (March 3, 2020): Initially functioning version**
-- dropouts and entire rows removed
+**1.0.1 (June 15, 2020): Usability improvements**
+- graph now uses more screen space (if available)
+- is now "installable" to desktop for convenience
+
+**1.0 (March 3, 2020): Initial release**
+- dropouts (and their entire row are removed)
 
 
 ---
