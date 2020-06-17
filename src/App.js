@@ -15,6 +15,7 @@ import ZoomButtons from './output-components/zoombuttons';
 import Processor from './processing/processor.js';
 import ErrorMsg from './input-components/errormsg';
 import About from './input-components/about';
+import InterpolateMode from './input-components/interpolatemode';
 
 class App extends React.Component {
   constructor(props) {
@@ -23,6 +24,7 @@ class App extends React.Component {
       csvData: [],
       cleanedCsvData: [],
       SDmode: true,
+      InterpolateMode: true,
       filterCutoff: 1.5,
       filterLower: true,
       filterHigher: false,
@@ -30,7 +32,7 @@ class App extends React.Component {
       ignoredRows: 1,
       analysisColumn: 0,
       isProcessing: false,
-      delRowNums: [],
+      dropoutRowNums: [],
       graphWidth: 700,
       errorMsg: '',
     }
@@ -40,6 +42,7 @@ class App extends React.Component {
     this.loadNegativeOnly = this.loadNegativeOnly.bind(this);
     this.loadNewData = this.loadNewData.bind(this);
     this.loadSDmode = this.loadSDmode.bind(this);
+    this.loadInterpolateMode = this.loadInterpolateMode.bind(this);
     this.loadFilterCutoff = this.loadFilterCutoff.bind(this);
     this.loadLookDistance = this.loadLookDistance.bind(this);
     this.loadIgnoredRows = this.loadIgnoredRows.bind(this);
@@ -60,17 +63,17 @@ class App extends React.Component {
       if (prevState.csvData !== this.state.csvData
         || prevState.isProcessing !== this.state.isProcessing
         || prevState.SDmode !== this.state.SDmode
+        || prevState.InterpolateMode !== this.state.InterpolateMode
         || prevState.lookDistance !== this.state.lookDistance
         || prevState.analysisColumn !== this.state.analysisColumn
         || prevState.ignoredRows !== this.state.ignoredRows
         || prevState.filterCutoff !== this.state.filterCutoff
         || prevState.filterLower !== this.state.filterLower
         || prevState.filterHigher !== this.state.filterHigher) {
-        let results = Processor.cleanData(this.state.csvData, this.state.SDmode, this.state.filterCutoff,
-          this.state.filterLower, this.state.filterHigher, parseInt(this.state.lookDistance), this.state.ignoredRows,
-          this.state.analysisColumn);
-        this.setState({ cleanedCsvData: results.cleanedCsvData, delRowNums: results.delRowNums });
-      } else {
+        let results = Processor.cleanData(this.state.csvData, this.state.SDmode, this.state.InterpolateMode, 
+          this.state.filterCutoff, this.state.filterLower, this.state.filterHigher, 
+          parseInt(this.state.lookDistance), this.state.ignoredRows, this.state.analysisColumn);
+        this.setState({ cleanedCsvData: results.cleanedCsvData, dropoutRowNums: results.dropoutRowNums });
       }
     } else {
       if(prevState.csvData !== this.state.csvData
@@ -135,6 +138,11 @@ class App extends React.Component {
     this.setState({ SDmode: isEnabled });
   }
 
+  // Callback for enabling/disabling interpolation
+  loadInterpolateMode(isEnabled) {
+    this.setState({ InterpolateMode: isEnabled });
+  }
+
   // Callback for updating the filter cutoff input
   loadFilterCutoff(event) {
     this.setState({ filterCutoff: parseFloat(event.target.value) });
@@ -149,7 +157,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <p><About /></p>
+          <div><About /></div>
         </header>
         <div className="app-body" style={{ paddingLeft: '25px' }}>
           {/* Left-hand Column - draw input/settings here! */}
@@ -202,6 +210,11 @@ class App extends React.Component {
                     />
                   </div>
                 </div>
+                <div className="columns">
+                  <div className="column">
+                    <InterpolateMode callback={this.loadInterpolateMode} />
+                  </div>
+                </div>
                 <ErrorMsg errorMsg={this.state.errorMsg} />
                 <button
                   className="button is-link is-light is-pulled-right"
@@ -220,7 +233,7 @@ class App extends React.Component {
               />
             </div>
 
-            <div className="column">
+            <div className="column max-without-450-px">
               {/* Right-hand Column - draw graphs here!*/}
               <Results {...this.state} />
             </div>

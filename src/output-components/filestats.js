@@ -4,7 +4,7 @@ import { CSVLink } from 'react-csv';
 class FileStats extends React.Component {
     render() {
         if (this.props.isProcessing) {
-            let droppedRowCount = this.props.delRowNums.length;
+            let droppedRowCount = this.props.dropoutRowNums.length;
             return (
                 <div className="box dropout-stats has-background-link has-text-white">
                     <div className="columns">
@@ -21,7 +21,7 @@ class FileStats extends React.Component {
                                 {droppedRowCount}
                             </p>
                             <p className="is-size-7">
-                                Rows Dropped
+                                {this.props.InterpolateMode ? 'Values Interpolated' : 'Rows Dropped'}
                             </p>
                         </div>
                         <div className="column">

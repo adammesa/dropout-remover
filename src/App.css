@@ -11,6 +11,10 @@
   .max-450-px {
     max-width: 450px !important;
   }
+
+  .max-without-450-px {
+    max-width: calc(100vw - 450px);
+  }
 }
 
 .App-header p {

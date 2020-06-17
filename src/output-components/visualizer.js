@@ -13,12 +13,13 @@ class Visualizer extends React.Component {
             this.props.csvData,
             this.props.cleanedCsvData,
             this.props.ignoredRows,
+            this.props.interpolateMode,
             this.props.analysisColumn,
-            this.props.delRowNums);
+            this.props.dropoutRowNums);
         return (
-            <div style={{ maxWidth: '700px', height: '630px', overflow: 'auto' }}>
+            <div style={{ height: '100%', overflow: 'auto' }}>
                 <div style={{
-                    height: '600px',
+                    height: '95%',
                     width: this.props.graphWidth,
                 }}>
                     <ResponsiveLineCanvas

@@ -49,12 +49,12 @@ class About extends React.Component {
                                 <a className="tag is-link" href="https://github.com/adammesa/dropout-remover" target="_blank">
                                     Source Code &#8594;
                                 </a>
-                                <p>
+                                <div>
                                     <ul>
                                         <li>v1.0.1 - June 2020; Bugfixes, minor usability improvements</li>
                                         <li>v1.0 - March 2020; Initial Release</li>
                                     </ul>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>

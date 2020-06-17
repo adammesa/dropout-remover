@@ -14,7 +14,8 @@ class Results extends React.Component {
                         cleanedCsvData={this.props.cleanedCsvData}
                         ignoredRows={this.props.ignoredRows}
                         analysisColumn={this.props.analysisColumn}
-                        delRowNums={this.props.delRowNums}
+                        interpolateMode={this.props.InterpolateMode}
+                        dropoutRowNums={this.props.dropoutRowNums}
                         graphWidth={this.props.graphWidth}
                     />
                 </div>
