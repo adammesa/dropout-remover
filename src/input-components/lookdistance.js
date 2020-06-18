@@ -9,7 +9,7 @@ class LookDistance extends React.Component {
     render() {
         return (
             <div className="field">
-                <label>Compare {this.props.default} ahead &amp; behind</label>
+                <label>Compare {isNaN(this.props.default) ? '_' : this.props.default} ahead &amp; behind</label>
                 <div className="control">
                     <input 
                     className="input" 
@@ -17,7 +17,7 @@ class LookDistance extends React.Component {
                     onChange={this.props.callback} 
                     min="1"
                     step="1"
-                    value={this.props.default}
+                    value={isNaN(this.props.default) ? '' : this.props.default}
                     placeholder="(Integers only)" />
                 </div>
             </div>

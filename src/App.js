@@ -38,6 +38,7 @@ class App extends React.Component {
     }
 
     this.toggleProcessingData = this.toggleProcessingData.bind(this);
+    this.checkForErrors = this.checkForErrors.bind(this);
     this.changeGraphSize = this.changeGraphSize.bind(this);
     this.loadNegativeOnly = this.loadNegativeOnly.bind(this);
     this.loadNewData = this.loadNewData.bind(this);
@@ -59,6 +60,10 @@ class App extends React.Component {
   // - without checking, the analysis function would in-turn update cleanedCsvData 
   //   and delRowNums, causing an infinite loop. 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    const errCheck = this.checkForErrors();
+    if (errCheck === '' && this.state.errorMsg !== '') {
+      this.setState({ errorMsg: '' });
+    }
     if (this.state.isProcessing) {
       if (prevState.csvData !== this.state.csvData
         || prevState.isProcessing !== this.state.isProcessing
@@ -70,31 +75,44 @@ class App extends React.Component {
         || prevState.filterCutoff !== this.state.filterCutoff
         || prevState.filterLower !== this.state.filterLower
         || prevState.filterHigher !== this.state.filterHigher) {
-        let results = Processor.cleanData(this.state.csvData, this.state.SDmode, this.state.InterpolateMode, 
-          this.state.filterCutoff, this.state.filterLower, this.state.filterHigher, 
-          parseInt(this.state.lookDistance), this.state.ignoredRows, this.state.analysisColumn);
-        this.setState({ cleanedCsvData: results.cleanedCsvData, dropoutRowNums: results.dropoutRowNums });
-      }
-    } else {
-      if(prevState.csvData !== this.state.csvData
-        || prevState.analysisColumn !== this.state.analysisColumn
-        || prevState.ignoredRows !== this.state.ignoredRows) {
-          if(this.state.csvData.length > 0
-            && this.state.ignoredRows !== ''
-            && this.state.analysisColumn !== -1) {
-            let colOfInterest = [];
-            for (let row = this.state.ignoredRows; row < this.state.csvData.length; row++) {
-              colOfInterest.push(this.state.csvData[row][this.state.analysisColumn]);
-            }
-            try {
-              mean(colOfInterest);
-              this.setState({errorMsg: ''});
-            } catch(e) {
-              this.setState({errorMsg: 'Only numbers can be analyzed'});
-            }
-          }
+        if (errCheck === '') {
+          // console.log("graphing: ignoreRows: " + this.state.ignoredRows);
+          let results = Processor.cleanData(this.state.csvData, this.state.SDmode, this.state.InterpolateMode,
+            this.state.filterCutoff, this.state.filterLower, this.state.filterHigher,
+            parseInt(this.state.lookDistance), this.state.ignoredRows, this.state.analysisColumn);
+          this.setState({ cleanedCsvData: results.cleanedCsvData, dropoutRowNums: results.dropoutRowNums });
+        } else {
+          this.setState({ errorMsg: errCheck, isProcessing: false });
         }
+      }
+    } 
+  }
+
+  // Returns any validation errors with the current settings, or empty string if valid
+  checkForErrors() {
+    let errors = [];
+    if (isNaN(this.state.filterCutoff)) { errors.push("cutoff"); }
+    if (isNaN(this.state.lookDistance)) { errors.push("comparison distance"); }
+    if (this.state.analysisColumn < 0 || this.state.analysisColumn > this.state.csvData[0].length) { 
+      errors.push("a valid column number to analyze"); 
     }
+    if (this.state.ignoredRows === "") { errors.push("header rows"); }
+    if (errors.length !== 0) {
+      errors = ["Please enter " + errors.join(", ") + "."];
+    }
+    if (this.state.csvData.length !== 0) {
+      try {
+        let colOfInterest = [];
+        for (let row = this.state.ignoredRows; row < this.state.csvData.length; row++) {
+          colOfInterest.push(this.state.csvData[row][this.state.analysisColumn]);
+        }
+        mean(colOfInterest);
+      } catch (e) {
+        errors.push('Non-number values detected (did you forget to set header rows).');
+      }
+    }
+    if (errors.length === 0) { return '' }
+    return errors.join(' ');
   }
 
   // Callback for resizing the visualizer chart (takes '+' or any other value will decrease width)
@@ -119,7 +137,9 @@ class App extends React.Component {
 
   // Callback for updating analysis column
   loadAnalysisColumn(event) {
-    this.setState({ analysisColumn: (event.target.value - 1) });
+    let confirmValue = event.target.value - 1;
+    if (confirmValue === -1) { confirmValue = 0; }
+    this.setState({ analysisColumn: confirmValue });
   }
 
 

@@ -16,7 +16,7 @@ class FilterCutoff extends React.Component {
                     onChange={this.props.callback} 
                     min="0"
                     step={this.props.mode ? '0.1' : '2'}
-                    value={this.props.default}
+                    value={isNaN(this.props.default) ? '' : this.props.default}
                     placeholder="(A S.D. cutoff of 1.5 is recommended)" />
                 </div>
             </div>
