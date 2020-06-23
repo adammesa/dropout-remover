@@ -123,7 +123,7 @@ class Processor {
      * @param filterCutoff
      * @param filterLower used in ignoring surrounding values below expected for interpolation
      * @param filterHigher used in ignoring surrounding values above expected for interpolation
-     * @param lookDistance used for fetching values to interpolate between
+1     * @param lookDistance used for fetching values to interpolate between
      * @param analysisColumn The column to average across
      * @return the interpolated value of the surrounding values
      */

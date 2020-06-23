@@ -18,7 +18,7 @@ class InstructionsGuide extends React.Component {
     render() {
         return (
             <div>
-                <div style={{textAlign: 'left'}} className={this.state.active ? "dropdown is-active" : "dropdown"}>
+                <div style={{ textAlign: 'left' }} className={this.state.active ? "dropdown is-active" : "dropdown"}>
                     <div className="dropdown-trigger">
                         <button className="button is-text" aria-haspopup="true" onClick={this.toggleClass}>
                             <span>Instructions</span>
@@ -35,23 +35,36 @@ class InstructionsGuide extends React.Component {
                                 </p>
                             </div>
                             <hr className="dropdown-divider" />
-                            <div className="dropdown-item"> 
-                                <b>Standard Deviation Mode </b><label className="tag">suggested</label>
-                                <p>Compares the current data point to the specified amount of values ahead/behind (exclusive of this current point). If 
-                                    the point is more than the specified cutoff value different from the unbiased standard deviation, the row will be removed.</p>
+                            <div className="dropdown-item">
+                                <b>Standard Deviation Mode </b><label className="tag">default</label>
+                                <p>Compares the current data point to the specified amount of values ahead/behind (exclusive of this
+                                current point). If the difference is more than the specified cutoff value from the standard
+                                    deviation (of the mean), the point is flagged as dropout.</p>
                             </div>
-                            <div className="dropdown-item"> 
+                            <div className="dropdown-item">
                                 <b>Absolute Mode </b>
-                                <p>Compares the current data point to the mean of the of values ahead/behind, if it is a static difference away, will be deleted."</p>
+                                <p>Compares the current data point to the mean of the of values ahead/behind, if it is a static difference
+                                    away from the mean, it will be modified."</p>
+                            </div>
+                            <div className="dropdown-item">
+                                <p>
+                                    <b>Interpolation</b> looks at the surrounding lookDistance-away values of the analysis column, and 
+                                    calculates the mean of these values, ignoring any that would be considered a dropout themselves. 
+                                    A new, "unbiased" mean is calculated which is taken as the interpolated value. For modifying
+                                    columns that are not the analysis column, it calculates the mean of values from that column, but
+                                    references the analysis column for guidance on which rows are dropouts and should be ignored from
+                                    calculations of the mean.
+                                </p>
                             </div>
                             <hr className="dropdown-divider" />
                             <div className="dropdown-item">
-                                <p>The program also lets you choose if dropouts can be lower (negative) compared to the average
-                                    of the compared period, or higher, or both. This is useful if your sensor when reporting
-                                    erroneous values, does so in one consistent direction. 
+                                <p>
+                                    The program also lets you choose if dropouts can be lower (negative) compared to the average
+                                    of the compared period, or higher, or both. This is useful if your sensor reports
+                                    erroneous values in one consistent direction.
                                 </p>
                                 <p>
-                                    <b>First/Last values</b>: If the program is unable to "look" the specified amount of cells
+                                    <i>First/Last values</i>: If the program is unable to "look" the specified amount of cells
                                     behind or ahead of the current value, it will attempt to do so with the values that do exist
                                     within the current look range. (It will not attempt to look further "ahead" if there are not
                                     enough values "behind", however)

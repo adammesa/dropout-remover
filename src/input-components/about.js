@@ -34,10 +34,7 @@ class About extends React.Component {
                                     Columbia, BC, Canada). It was made to help with physiologic devices re-calibrating mid-reading that would
                                     report values far below expected before returning to the expected/consensus readings of our other devices.<br/>
                                 </p>
-                                <p>
-                                    <b>Interpolation</b> looks at the surrounding lookDistance-away values, and calculates the mean of these values,
-                                    ignoring any that would be considered a dropout themselves. This mean value is the interpolated value.
-                                </p>
+
                             </div>
                             <hr className="dropdown-divider" />
                             <div className="dropdown-item">
@@ -51,12 +48,13 @@ class About extends React.Component {
                             <hr className="dropdown-divider" />
                             <div className="dropdown-item"> 
                                 <b>Versions </b>
-                                <label className="tag">Current: v1.1</label>&nbsp;
+                                <label className="tag">Current: v1.2</label>&nbsp;
                                 <a className="tag is-link" href="https://github.com/adammesa/dropout-remover" target="_blank">
                                     Source Code &#8594;
                                 </a>
                                 <div>
                                     <ul>
+                                        <li>v1.2 - June 2020; Added interpolation/removal row chooser, error message improvements</li>
                                         <li>v1.1 - June 2020; Added Interpolation, bugfixes, & better error catches</li>
                                         <li>v1.0.1 - June 2020; Bugfixes, minor usability improvements</li>
                                         <li>v1.0 - March 2020; Initial Release</li>

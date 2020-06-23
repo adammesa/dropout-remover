@@ -16,6 +16,7 @@ import Processor from './processing/processor.js';
 import ErrorMsg from './input-components/errormsg';
 import About from './input-components/about';
 import InterpolateMode from './input-components/interpolatemode';
+import DropoutColumns from './input-components/dropoutcolumns';
 
 class App extends React.Component {
   constructor(props) {
@@ -31,6 +32,7 @@ class App extends React.Component {
       lookDistance: 5,
       ignoredRows: 1,
       analysisColumn: 0,
+      dropoutColumns: [0],
       isProcessing: false,
       dropoutRowNums: [],
       graphWidth: 700,
@@ -48,6 +50,7 @@ class App extends React.Component {
     this.loadLookDistance = this.loadLookDistance.bind(this);
     this.loadIgnoredRows = this.loadIgnoredRows.bind(this);
     this.loadAnalysisColumn = this.loadAnalysisColumn.bind(this);
+    this.loadDropoutColumns = this.loadDropoutColumns.bind(this);
   }
 
   // Trigger data processing
@@ -71,6 +74,7 @@ class App extends React.Component {
         || prevState.InterpolateMode !== this.state.InterpolateMode
         || prevState.lookDistance !== this.state.lookDistance
         || prevState.analysisColumn !== this.state.analysisColumn
+        || prevState.dropoutColumns !== this.state.dropoutColumns
         || prevState.ignoredRows !== this.state.ignoredRows
         || prevState.filterCutoff !== this.state.filterCutoff
         || prevState.filterLower !== this.state.filterLower
@@ -85,16 +89,22 @@ class App extends React.Component {
           this.setState({ errorMsg: errCheck, isProcessing: false });
         }
       }
-    } 
+    }
   }
 
   // Returns any validation errors with the current settings, or empty string if valid
   checkForErrors() {
     let errors = [];
-    if (isNaN(this.state.filterCutoff)) { errors.push("cutoff"); }
-    if (isNaN(this.state.lookDistance)) { errors.push("comparison distance"); }
-    if (this.state.analysisColumn < 0 || this.state.analysisColumn > this.state.csvData[0].length) { 
-      errors.push("a valid column number to analyze"); 
+    if (isNaN(this.state.filterCutoff)) { errors.push("the cutoff"); }
+    if (isNaN(this.state.lookDistance)) { errors.push("the comparison distance"); }
+    if (this.state.dropoutColumns.length === 0) { errors.push('valid modify columns (usually same as analysis column)'); }
+    if (this.state.csvData[0] === undefined) {
+      errors.push('a csv file to analyse');
+      errors = "Please enter " + errors.join(", ") + ".";
+      return errors;
+    }
+    if (this.state.analysisColumn < 0 || this.state.analysisColumn > this.state.csvData[0].length) {
+      errors.push("a valid column number to analyze");
     }
     if (this.state.ignoredRows === "") { errors.push("header rows"); }
     if (errors.length !== 0) {
@@ -137,9 +147,20 @@ class App extends React.Component {
 
   // Callback for updating analysis column
   loadAnalysisColumn(event) {
-    let confirmValue = event.target.value - 1;
-    if (confirmValue === -1) { confirmValue = 0; }
-    this.setState({ analysisColumn: confirmValue });
+    const val = parseInt(event.target.value);
+    if (isNaN(val)) {
+      this.setState({ analysisColumn: 0 });
+    } else {
+      this.setState({ analysisColumn: val - 1 });
+    }
+    // const confirmValue = parseInt(event.target.value) - 1;
+    // this.setState({ analysisColumn: confirmValue });
+  }
+
+  // Callback for updating dropout columns, expects well-formed string
+  loadDropoutColumns(arrayOfDropouts) {
+    // @TODO: parse
+    this.setState({ dropoutColumns: arrayOfDropouts });
   }
 
 
@@ -204,6 +225,11 @@ class App extends React.Component {
                       callback={this.loadAnalysisColumn}
                       maxColumns={this.state.csvData.length === 0 ? '1' : this.state.csvData[0].length}
                       default={this.state.analysisColumn}
+                    />
+                    <DropoutColumns
+                      default={this.state.dropoutColumns}
+                      callback={this.loadDropoutColumns}
+                      maxColumns={this.state.csvData.length === 0 ? '1' : this.state.csvData[0].length}
                     />
                   </div>
                 </div>

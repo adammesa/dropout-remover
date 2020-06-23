@@ -35,7 +35,7 @@ class InterpolateMode extends React.Component {
                                 checked={this.state.InterpolateMode}
                                 onChange={this.beginCallback}
                             />
-                            Interpolate
+                            Interpolate values
                     </label>
                         <label className="radio">
                             <input
@@ -45,7 +45,7 @@ class InterpolateMode extends React.Component {
                                 checked={!this.state.InterpolateMode}
                                 onChange={this.beginCallback}
                             />
-                            &nbsp;Erase entire row
+                            &nbsp;Erase values
                     </label>
                     </div>
                 </div>
