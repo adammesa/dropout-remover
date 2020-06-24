@@ -83,7 +83,7 @@ class App extends React.Component {
           // console.log("graphing: ignoreRows: " + this.state.ignoredRows);
           let results = Processor.cleanData(this.state.csvData, this.state.SDmode, this.state.InterpolateMode,
             this.state.filterCutoff, this.state.filterLower, this.state.filterHigher,
-            parseInt(this.state.lookDistance), this.state.ignoredRows, this.state.analysisColumn);
+            parseInt(this.state.lookDistance), this.state.ignoredRows, this.state.analysisColumn, this.state.dropoutColumns);
           this.setState({ cleanedCsvData: results.cleanedCsvData, dropoutRowNums: results.dropoutRowNums });
         } else {
           this.setState({ errorMsg: errCheck, isProcessing: false });

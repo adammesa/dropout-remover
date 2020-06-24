@@ -19,7 +19,8 @@ class Processor {
         filterHigher,
         lookDistance,
         ignoredRows,
-        analysisColumn) {
+        analysisColumn,
+        dropoutColumns) {
         let cleanData = [];
         let dropoutRows = [];
         // Push header columns onto CSV
@@ -28,30 +29,42 @@ class Processor {
         for (let row = ignoredRows; row < csvData.length; row++) {
             if (this._isOutlier(row, csvData, SDmode, filterCutoff, filterLower,
                 filterHigher, lookDistance, ignoredRows, analysisColumn)) {
-                let currRow = [];
-                for (let col = 0; col < csvData[row].length; col++) {
-                    // Push empty values corresponding to amount of rows in original dataset
-                    if (interpolateMode || isNaN(parseInt(csvData[row][col]))) {
-                        if (col === analysisColumn) {
-                            currRow.push(this._interpolatePoint(
-                                row, csvData, SDmode, filterCutoff, filterLower,
-                                filterHigher, lookDistance, ignoredRows, analysisColumn
-                            ));
-                        } else {
-                            //  interpolate mode or looks like col contained text, don't delete
-                            currRow.push(csvData[row][col]);
-                        }
-                    } else {
-                        currRow.push(null);
-                    }
-                }
-                cleanData.push(currRow);
                 dropoutRows.push(row);
+            } 
+        }
+
+        for (let row = ignoredRows; row < csvData.length; row++) {
+            if (dropoutRows.includes(row)) {
+                cleanData.push(this._modifyDropoutRow(row, csvData, interpolateMode, 
+                    lookDistance, ignoredRows, dropoutColumns, dropoutRows));
             } else {
                 cleanData.push(csvData[row]);
             }
         }
         return { cleanedCsvData: cleanData, dropoutRowNums: dropoutRows };
+    }
+
+    /***
+     * Modifies the values of a row flagged as a dropout according to interpolateMode.
+     * - @param row a dropout row to modify 
+     * - @param dropoutRowNums all dropout rows (to ensure neighbouring dropout values aren't included in interpolation
+     *                         calculations)
+     * - returns the complete, adjusted row (with both adjusted values and values not flagged for adjustment)
+     */
+    static _modifyDropoutRow(row, csvData, interpolateMode, lookDistance, ignoredRows, dropoutColumns, dropoutRowNums) {
+        let modifiedRow = [];
+        for (let col = 0; col < csvData[row].length; col++) {
+            if (dropoutColumns.includes(col)) {
+                if (interpolateMode) {
+                    modifiedRow.push(this._interpolatePoint(row, csvData, lookDistance, ignoredRows, col, dropoutRowNums));
+                } else {
+                    modifiedRow.push(null);
+                }
+            } else {
+                modifiedRow.push(csvData[row][col]);
+            }
+        }
+        return modifiedRow; 
     }
 
     /*****
@@ -119,75 +132,27 @@ class Processor {
      *   that are also below or above the cutoffs. 
      * @param targetRow the row to interpolate
      * @param csvData the file's CSV data
-     * @param SDmode 
-     * @param filterCutoff
-     * @param filterLower used in ignoring surrounding values below expected for interpolation
-     * @param filterHigher used in ignoring surrounding values above expected for interpolation
-1     * @param lookDistance used for fetching values to interpolate between
-     * @param analysisColumn The column to average across
+     * @param lookDistance used for fetching values to interpolate between
+     * @param ignoredRows the starting point accounted for by 'header rows'
+     * @param targetColumn The column to average across
+     * @param dropoutRowNums the list of all dropouts; to be ignored in interpolation if encountered
      * @return the interpolated value of the surrounding values
      */
-
-    static _interpolatePoint(
-        targetRow,
-        csvData,
-        SDmode,
-        filterCutoff,
-        filterLower,
-        filterHigher,
-        lookDistance,
-        ignoredRows,
-        analysisColumn
-    ) {
+    static _interpolatePoint(targetRow, csvData, lookDistance, ignoredRows, targetColumn, dropoutRowNums) {
         let neighbouringVals = [];
         let firstComparisonPoint = targetRow - lookDistance;
         let lastComparisonPoint = targetRow + lookDistance;
         if (firstComparisonPoint < ignoredRows) { firstComparisonPoint = ignoredRows; }
         if (lastComparisonPoint > (csvData.length - 1)) { lastComparisonPoint = csvData.length - 1; }
         for (let pos = firstComparisonPoint; pos < lastComparisonPoint; pos++) {
-            if (pos === targetRow) {
-                // Row to be dropped, do nothing
+            if (dropoutRowNums.includes(pos)) {
+                // The current row is a row flagged for modification, don't include it in averaging
             } else {
-                neighbouringVals.push(csvData[pos][analysisColumn]);
+                neighbouringVals.push(csvData[pos][targetColumn]);
             }
         }
         const average = mean(neighbouringVals);
-        const stdeviation = std(neighbouringVals);
-
-        let prunedNeighbouringVals = [];
-        for (let i = 0; i < neighbouringVals.length; i++) {
-            let currentDiff = neighbouringVals[i] - average;
-            if (currentDiff < 0 && filterLower) {
-                let isOutlier;
-                if (SDmode) {
-                    isOutlier = currentDiff < (-stdeviation * filterCutoff);
-                } else {
-                    isOutlier = currentDiff < (-filterCutoff);
-                }
-                if (!isOutlier) { prunedNeighbouringVals.push(neighbouringVals[i]); }
-            } else if (currentDiff > 0 && filterHigher) {
-                let isOutlier;
-                if (SDmode) {
-                    isOutlier = currentDiff < (stdeviation * filterCutoff);
-                } else {
-                    isOutlier = currentDiff < (filterCutoff);
-                }
-                if (!isOutlier) { prunedNeighbouringVals.push(neighbouringVals[i]); }
-            } else {
-                prunedNeighbouringVals.push(neighbouringVals[i]);
-            }
-        }
-        let interpolatedVal;
-        if (prunedNeighbouringVals.length === 0) {
-            if (targetRow < 200) {
-                console.log("No valid neighbouringVals for " + targetRow + ". Surrounding vals " + neighbouringVals);
-                console.log("Pruned: " + prunedNeighbouringVals);
-            }
-            interpolatedVal = -1;
-        } else {
-            interpolatedVal = mean(prunedNeighbouringVals);
-        }
-        return interpolatedVal;
+        return average;
     }
 
     // Prepares are Nivo-ready dataset from (original) csvData, delrows, and

@@ -31,7 +31,11 @@ class InstructionsGuide extends React.Component {
                                     <button className="delete" onClick={this.toggleClass} style={{ float: 'right' }}>Hide</button>
                                     Upload a ".csv" file with any number of columns. Specify which column to analyze.
                                     Data in that column that is an outlier relative to its peers will be
-                                    deleted (along with all numbers in that row).
+                                    marked as an outlier. All outlier rows will have the values under "columns to modify" either 
+                                    deleted or interpolated based on your settings. <br/>
+                                    <b>Note:</b> The preview graph currently only supports showing the modified values
+                                    of your column of analysis: if you choose not to modify the column of analysis, you won't see any
+                                    of your changes in the preview.
                                 </p>
                             </div>
                             <hr className="dropdown-divider" />

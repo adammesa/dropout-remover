@@ -26,7 +26,7 @@ class CsvPreview extends React.Component {
                 <div className={this.state.active ? "dropdown is-active is-pulled-right" : "dropdown is-pulled-right"}>
                     <div className="dropdown-trigger">
                         <button className="button is-small is-text" aria-haspopup="true" onClick={this.toggleClass}>
-                            <span>Preview</span>
+                            <span>Snippet</span>
                         </button>
                     </div>
                     <div className="dropdown-menu" id="dropdown-instructions" role="menu">

@@ -8,6 +8,15 @@ Technologies used: React & JS (see below), Nivo ([@Nivo/line](https://nivo.rocks
 
 ---
 ## Versions
+**1.2 (June 23, 2020): Specify columns to modify**
+- Added the ability to specifically target which row to delete/remove
+- Added minor error message improvements
+- Minor language changes; improved "instructions" dropdown
+
+**1.1 (June 15, 2020): Interpolation**
+- Added Interpolation (averaging between analysis values), 
+- bugfixes
+- better error catches and notice displayment
 
 **1.0.1 (June 15, 2020): Installable & UX Improvements**
 - Made dropout remover installable to desktop: no need to remember the URL
